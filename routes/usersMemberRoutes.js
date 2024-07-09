@@ -127,12 +127,12 @@ router.get(
   }
 );
 //用戶登戶後 merged cart
-router.patch(
-  'cart/${id}' /* 	#swagger.tags = ['User-Member:cart']
-  #swagger.description = 'post an cart' */,
-  isAuth,
-  mergeCart
-);
+// router.patch(
+//   'cart/${id}' /* 	#swagger.tags = ['User-Member:cart']
+//   #swagger.description = 'post an cart' */,
+//   isAuth,
+//   mergeCart
+// );
 
 // 用戶登戶後 add to cart
 router.post(
