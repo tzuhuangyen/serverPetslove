@@ -1,4 +1,4 @@
-const UserModel = require('./models/usersModel');
+const UserModel = require('../models/usersModel');
 const mergeCart = async (req, res) => {
   try {
     const userId = req.user._id;

@@ -10,7 +10,7 @@ const ProductModel = require('../models/uploadImageModel');
 const appError = require('../service/appError');
 const handleErrorAsync = require('../service/handleErrorAsync');
 const { isAuth, generateToken } = require('../service/auth');
-const { mergeCart } = require('../cartController');
+const { mergeCart } = require('../controller/cartController');
 //查詢用戶個人資料
 router.get(
   '/myProfile' /* 	#swagger.tags = ['User-Member']

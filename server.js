@@ -31,12 +31,13 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 app.use(express.json());
-const imagesPath = path.join(__dirname, '../client/public/images');
+const imagesPath = path.join(__dirname, '../client/public/Images');
 console.log(imagesPath);
 console.log(`Resolved images path: ${imagesPath}`);
 
 // express.static('public/Images')
 app.use('/adminProducts', express.static('public/Images'));
+
 app.use((req, res, next) => {
   console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url}`);
   next();
@@ -66,7 +67,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // 404 找不到頁面 錯誤處理程序
 app.use((req, res, next) => {
-  res.status(404).send("Sorry can't find that! 404 错误处理程序");
+  res.status(404).send(' 404 not found pages');
 });
 // express全域錯誤捕捉 程式處理程序管理
 app.use((err, req, res, next) => {
