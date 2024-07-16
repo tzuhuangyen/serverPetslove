@@ -145,7 +145,7 @@ router.post(
       if (!userId) {
         return next(appError(400, 'User ID is missing', next));
       }
-      const { productId, quantity } = req.body;
+      const { item } = req.body;
       console.log('Received productId:', productId);
 
       // 查找產品信息
@@ -172,6 +172,7 @@ router.post(
       } else {
         // 如果產品已在購物車中，更新數量
         cart.items[existingItemIndex].quantity += quantity || 1;
+        cart.items[existingItemIndex].total += product.price * (quantity || 1);
       }
       // 保存購物車
       await cart.save();
