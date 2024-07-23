@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.new,
     },
-    //elect: false,前台不會顯示
+    //select: false,前台不會顯示
   },
   {
     versionKey: false,

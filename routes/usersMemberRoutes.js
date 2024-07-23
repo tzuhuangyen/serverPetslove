@@ -141,43 +141,52 @@ router.post(
   isAuth,
   async (req, res, next) => {
     try {
+      const { item } = req.body;
+      const { productId, quantity } = item;
+      console.log('Received productId:', productId);
+
       const userId = req.user._id;
       if (!userId) {
         return next(appError(400, 'User ID is missing', next));
       }
-      const { item } = req.body;
-      console.log('Received productId:', productId);
-
       // 查找產品信息
       const product = await ProductModel.findById(productId);
       if (!product) {
         return next(appError(404, 'Product not found', next));
       }
+
       // 查找或創建購物車
-      let cart = await CartModel.findOne({ user: userId });
+      const cart = await CartModel.findOne({ user: userId });
       if (!cart) {
-        cart = new CartModel({ user: userId, items: [] });
-      }
-      // 查找現有的產品在購物車中的索引
-      const existingItemIndex = cart.items.findIndex(
-        (item) => item.productId.toString() === productId
-      );
-      // 如果產品不在購物車中，添加新項
-      if (existingItemIndex === -1) {
-        cart.items.push({
-          productId,
-          quantity: quantity || 1,
-          total: product.price,
+        const newCart = new CartModel({
+          user: userId,
+          items: [{ productId, quantity }],
         });
+        await newCart.save();
       } else {
-        // 如果產品已在購物車中，更新數量
-        cart.items[existingItemIndex].quantity += quantity || 1;
-        cart.items[existingItemIndex].total += product.price * (quantity || 1);
+        // Update existing cart
+        // 查找現有的產品在購物車中的索引
+        const existingItemIndex = cart.items.findIndex(
+          (item) => item.productId.toString() === productId
+        );
+        // 如果產品不在購物車中，添加新項
+        if (existingItemIndex === -1) {
+          cart.items.push({
+            productId,
+            quantity: quantity || 1,
+            total: product.price,
+          });
+        } else {
+          // 如果產品已在購物車中，更新數量
+          cart.items[existingItemIndex].quantity += quantity || 1;
+          cart.items[existingItemIndex].total +=
+            product.price * (quantity || 1);
+        }
+        // 保存購物車
+        await cart.save();
+        // 關聯查詢 user 的 username
+        await cart.populate('user', 'username');
       }
-      // 保存購物車
-      await cart.save();
-      // 關聯查詢 user 的 username
-      await cart.populate('user', 'username');
       res.status(200).json({ cart });
     } catch (error) {
       console.error('Error fetching user profile:', error);
