@@ -139,7 +139,7 @@ router.post(
   '/cart' /* 	#swagger.tags = ['User-Member:cart']
 #swagger.description = 'post an cart' */,
   isAuth,
-  async (req, res, next) => {
+  handleErrorAsync(async (req, res, next) => {
     try {
       const { item } = req.body;
       const { productId, quantity } = item;
@@ -156,7 +156,7 @@ router.post(
       }
 
       // 查找或創建購物車
-      const cart = await CartModel.findOne({ user: userId });
+      let cart = await CartModel.findOne({ user: userId });
       if (!cart) {
         const newCart = new CartModel({
           user: userId,
@@ -192,7 +192,7 @@ router.post(
       console.error('Error fetching user profile:', error);
       next(error); // 確保 next 被調用
     }
-  }
+  })
 );
 // patch cart with new quantity
 router.patch(
