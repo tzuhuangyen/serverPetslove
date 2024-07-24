@@ -1,4 +1,4 @@
-const handleErrorAsync = require('handleErrorAsync');
+const handleErrorAsync = require('../service/handleErrorAsync');
 const UserModel = require('../models/usersModel');
 const mergeCart = handleErrorAsync(async (req, res) => {
   const userId = req.user._id;
