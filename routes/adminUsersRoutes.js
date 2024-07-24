@@ -19,39 +19,33 @@ router.get(
   /* #swagger.responses[200] = {
 schema: {},
 description: "User registered successfully." } */
-  async (req, res) => {
-    try {
-      const data = await UserModel.find();
-      console.log(data);
-      res.send({ status: 'ok', data: data });
-      console.log('Handling GET request to mongoDB for /users');
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+  handleErrorAsync(async (req, res) => {
+    const data = await UserModel.find();
+    console.log(data);
+    res.send({ status: 'ok', data: data });
+    console.log('Handling GET request to mongoDB for /users');
+  })
 );
 
 //admin find/get by ID
 router.get(
   '/:id',
   /* 	#swagger.tags = ['Admin-Users']
-#swagger.description = 'get a users bu id' */ async (req, res) => {
-    try {
+#swagger.description = 'get a users bu id' */ handleErrorAsync(
+    async (req, res) => {
       const data = await UserModel.findById(req.params.id);
       res.json(data);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
     }
-  }
+  )
 );
 //admin get all orders
 router.post(
   '/orders' /* 	#swagger.tags = ['Admin-Orders']
 #swagger.description = 'get all orders' */,
-  async (req, res) => {
+  handleErrorAsync(async (req, res) => {
     const newOder = new orderModel(req.body);
     await newOder.order();
     res.status(200).json(newOder);
-  }
+  })
 );
 module.exports = router;

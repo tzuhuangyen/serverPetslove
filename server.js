@@ -1,4 +1,3 @@
-require('dotenv').config();
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
 
@@ -8,6 +7,7 @@ const path = require('path');
 const cors = require('cors');
 const connectDB = require('./connectMongo');
 connectDB();
+
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
 //捕捉程式重大錯誤 這個要放最前面
@@ -69,12 +69,47 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use((req, res, next) => {
   res.status(404).send(' 404 not found pages');
 });
+
+// 上線環境錯誤處理程序
+const resErrorProd = (err, res) => {
+  console.error(err.message);
+  if (err.isOperational) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    });
+  } else {
+    console.error('something went wrong', err);
+    res.status(500).json({
+      status: 'error',
+      message: 'Internal Server Error',
+    });
+  }
+};
+//開發環境錯誤處理程序
+const resErrorDev = (err, res) => {
+  res.status(err.statusCode || 500).json({
+    status: err.status,
+    message: err.message,
+    error: err,
+    stack: err.stack,
+  });
+};
 // express全域錯誤捕捉 程式處理程序管理
 app.use((err, req, res, next) => {
+  console.log(err.name);
   console.error(err.stack);
   const statusCode = err.statusCode || 500;
-  const message = err.message || 'Internal Server Error';
-  res.status(statusCode).json({ err: message });
+  if (process.env.NODE_ENV === 'dev') {
+    return resErrorDev(err, res);
+  }
+  //production mongoose
+  if (err.name === 'ValidationError') {
+    err.message = 'please enter again';
+    err.isOperational = true;
+    return resErrorDev(err, res);
+  }
+  resErrorProd(err, res);
 });
 //未捕捉到 api 的catch
 process.on('unhandleRejection', (err, promise) => {

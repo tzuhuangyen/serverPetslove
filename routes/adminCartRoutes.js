@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const CartModel = require('../models/cartModel');
+const handleErrorAsync = require('../service/handleErrorAsync');
 
 router.get(
   '/' /* 	#swagger.tags = ['Admin-Carts']
@@ -8,15 +9,11 @@ router.get(
   /* #swagger.responses[200] = {
     schema: {},
     description: "got all Users' cart successfully." } */
-  async (req, res) => {
-    try {
-      const data = await CartModel.find();
-      console.log(data);
-      res.send({ status: 'ok', data: data });
-      console.log('Handling GET request to mongoDB for /users_carts');
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  }
+  handleErrorAsync(async (req, res, next) => {
+    const data = await CartModel.find();
+    console.log(data);
+    res.send({ status: 'ok', data: data });
+    console.log('Handling GET request to mongoDB for /users_carts');
+  })
 );
 module.exports = router;
