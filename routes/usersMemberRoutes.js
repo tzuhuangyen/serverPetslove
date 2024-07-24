@@ -96,7 +96,7 @@ router.get(
       return next(appError(404, 'User not found', next));
     }
     // 根据用户ID查找购物车数据
-    let cart = await CartModel.findOne({ userId: userId }).populate({
+    let cart = await CartModel.findOne({ user }).populate({
       path: 'user',
       select: 'username',
     });
@@ -143,10 +143,10 @@ router.post(
     }
 
     // 查找或創建購物車
-    let cart = await CartModel.findOne({ userId });
+    let cart = await CartModel.findOne({ user: userId });
     if (!cart) {
       cart = new CartModel({
-        userId,
+        user: userId,
         items: [],
       });
     }
