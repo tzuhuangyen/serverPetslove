@@ -125,6 +125,7 @@ router.post(
   isAuth,
   handleErrorAsync(async (req, res, next) => {
     const { item } = req.body;
+    const { productId, quantity } = item; // Extract productId and quantity from item
     console.log('Received productId:', productId);
     const userId = req.user._id;
     if (!userId) {
@@ -147,13 +148,13 @@ router.post(
     // Update existing cart
     // 查找現有的產品在購物車中的索引
     const existingItemIndex = cart.items.findIndex(
-      (cartItem) => cartItem.productId.toString() === item._id
+      (cartItem) => cartItem.productId.toString() === productId
     );
     // 如果產品不在購物車中，添加新項
     if (existingItemIndex === -1) {
       cart.items.push({
-        productId: item._id,
-        quantity: item.quantity,
+        productId,
+        quantity,
         total: product.price,
       });
     } else {
