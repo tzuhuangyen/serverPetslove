@@ -166,6 +166,7 @@ router.post(
       // 如果產品已在購物車中，更新數量
       cart.items[existingItemIndex].quantity += item.quantity;
     }
+    cart.user = userId;
     // 保存購物車
     await cart.save();
     console.log('Item added to cart:', cart);
