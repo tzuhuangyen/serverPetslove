@@ -162,6 +162,8 @@ router.post(
     }
     // 保存購物車
     await cart.save();
+    console.log('Item added to cart:', cart);
+
     // 關聯查詢 user 的 username
     await cart.populate('user', 'username');
     res.status(200).json({ cart });
