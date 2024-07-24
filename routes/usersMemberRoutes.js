@@ -126,11 +126,12 @@ router.post(
   handleErrorAsync(async (req, res, next) => {
     const { item } = req.body;
     console.log('Received item:', item); // 添加日志以检查接收到的 item 对象
-    if (!item || !item.productId || !item.quantity) {
+
+    const { _id: productId, quantity } = item; // Extract productId and quantity from item
+    console.log('Received productId:', productId);
+    if (!item || !item._id || !item.quantity) {
       return next(appError(400, 'Invalid item data', next)); // 验证 item 对象
     }
-    const { productId, quantity } = item; // Extract productId and quantity from item
-    console.log('Received productId:', productId);
     const userId = req.user._id;
     if (!userId) {
       return next(appError(400, 'User ID is missing', next));
