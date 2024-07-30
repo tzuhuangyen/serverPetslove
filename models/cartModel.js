@@ -17,7 +17,6 @@ const cartItemSchema = new mongoose.Schema({
     min: [1, 'Quantity can not be less than 1.'],
   },
   price: { type: Number, required: true },
-  image: { type: String, required: true },
 });
 
 //cartModel

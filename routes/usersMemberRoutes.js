@@ -140,8 +140,7 @@ router.post(
       !productName ||
       !productId ||
       quantity === undefined ||
-      price === undefined ||
-      !image
+      price === undefined
     ) {
       return next(appError(400, 'Invalid item data', next)); // 验证 item 对象
     }
@@ -174,6 +173,7 @@ router.post(
         productId,
         productName,
         quantity,
+        price,
       });
     } else {
       // 如果產品已在購物車中，更新數量
