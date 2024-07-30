@@ -127,13 +127,12 @@ router.post(
     const { item } = req.body;
     console.log('Received item:', item); // 添加日志以检查接收到的 item 对象
 
-    const { productId, quantity, productName, price, image } = item; // Extract productId and quantity from item
+    const { productId, quantity, productName, price } = item; // Extract productId and quantity from item
     console.log('Extracted data:', {
       productId,
       quantity,
       productName,
       price,
-      image,
     });
 
     if (
@@ -155,7 +154,9 @@ router.post(
     }
 
     // 查找或創建購物車
-    let cart = await CartModel.findOne({ user: userId });
+    let cart = await CartModel.findOne({ user: userId }).populate(
+      items.productName
+    );
     if (!cart) {
       cart = new CartModel({
         user: userId,
