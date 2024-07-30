@@ -127,7 +127,7 @@ router.post(
     const { item } = req.body;
     console.log('Received item:', item); // 添加日志以检查接收到的 item 对象
 
-    const { _id: productId, quantity, productName } = item; // Extract productId and quantity from item
+    const { productId, quantity, productName } = item; // Extract productId and quantity from item
     console.log('Extracted data:', { productId, quantity, productName });
 
     if (!productName || !productId || quantity) {
