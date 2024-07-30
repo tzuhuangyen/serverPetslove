@@ -130,7 +130,7 @@ router.post(
     const { _id: productId, quantity, productName } = item; // Extract productId and quantity from item
     console.log('Received item:', req.body.item);
 
-    if (!item || !item._id || !item.quantity) {
+    if (!item || !productId || !item.quantity) {
       return next(appError(400, 'Invalid item data', next)); // 验证 item 对象
     }
     const userId = req.user._id;
