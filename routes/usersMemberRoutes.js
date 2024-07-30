@@ -136,7 +136,13 @@ router.post(
       image,
     });
 
-    if (!productName || !productId || quantity || price || image) {
+    if (
+      !productName ||
+      !productId ||
+      quantity === undefined ||
+      price === undefined ||
+      !image
+    ) {
       return next(appError(400, 'Invalid item data', next)); // 验证 item 对象
     }
     const userId = req.user._id;
