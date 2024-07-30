@@ -127,10 +127,16 @@ router.post(
     const { item } = req.body;
     console.log('Received item:', item); // 添加日志以检查接收到的 item 对象
 
-    const { productId, quantity, productName } = item; // Extract productId and quantity from item
-    console.log('Extracted data:', { productId, quantity, productName });
+    const { productId, quantity, productName, price, image } = item; // Extract productId and quantity from item
+    console.log('Extracted data:', {
+      productId,
+      quantity,
+      productName,
+      price,
+      image,
+    });
 
-    if (!productName || !productId || quantity) {
+    if (!productName || !productId || quantity || price || image) {
       return next(appError(400, 'Invalid item data', next)); // 验证 item 对象
     }
     const userId = req.user._id;
