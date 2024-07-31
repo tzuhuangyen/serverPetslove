@@ -26,7 +26,11 @@ const adminProductRoutes = require('./routes/adminProductRoutes');
 const adminUserRoutes = require('./routes/adminUsersRoutes');
 const adminCartRoutes = require('./routes/adminCartRoutes');
 const corsOptions = {
-  origin: ['https://tzuhuangyen.github.io', 'http://localhost:5173'], // 允許您的前端域
+  origin: [
+    'https://tzuhuangyen.github.io',
+    'http://localhost:5173',
+    'http://localhost:5174',
+  ], // 允許您的前端域
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
