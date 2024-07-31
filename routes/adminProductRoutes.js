@@ -109,13 +109,15 @@ router.post(
     console.log(req.body);
     const { productName, type, order, price } = req.body;
     const imageName = req.file.filename;
+
     const newProduct = await ProductModel.create({
       image: imageName,
-      productName: productName,
+      productName,
       type,
       order,
       price,
     });
+    res.status(201).json({ success: true, data: newProduct });
     console.log('New product created:', newProduct);
   })
 );

@@ -2,7 +2,7 @@
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 const path = require('path');
-
+const ProductModel = require('../models/uploadImageModel');
 // 使用 Multer 中间件处理图像上传
 //multer定义文件上传的存储引擎、文件名和上传目录等选项
 //三個參數： request 物件、帶有上傳檔案資訊的file 物件、篩選完成後呼叫的cb 函式。
