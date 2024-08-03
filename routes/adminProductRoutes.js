@@ -84,7 +84,7 @@ router.get(
     res.status(200).json({ status: 'ok', data: product });
   })
 );
-
+//app.use('/api/admin/products', adminProductRoutes);
 // 後端路由/products/uploadProduct处理图像上传的路由
 router.post(
   '/uploadProduct' /* 	#swagger.tags = ['Admin-Products']
@@ -103,7 +103,6 @@ router.post(
   adminUploadMiddleware.single('image'),
   handleErrorAsync(async (req, res, next) => {
     if (!req.file) {
-      // return res.status(400).json({ error: 'No file uploaded' });
       return next(appError(400, 'please upload product information'));
     }
     console.log(req.body);
@@ -117,7 +116,8 @@ router.post(
       order,
       price,
     });
-    res.status(201).json({ success: true, data: newProduct });
+    const saveNewProduct = await newProduct.save();
+    res.status(201).json({ success: true, data: saveNewProduct });
     console.log('New product created:', newProduct);
   })
 );
