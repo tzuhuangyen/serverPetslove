@@ -178,6 +178,7 @@ router.post(
       // 如果產品已在購物車中，更新數量
       cart.items[existingItemIndex].quantity += quantity;
       cart.items[existingItemIndex].price = price; // 更新價格
+      cart.items[existingItemIndex].productName = productName; // 更新產品名稱
     }
     cart.user = userId;
     // 保存購物車
