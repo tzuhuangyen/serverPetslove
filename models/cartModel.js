@@ -7,7 +7,11 @@ const cartItemSchema = new mongoose.Schema({
     ref: 'Products',
     required: true,
   },
-
+  productName: {
+    // 新增這一行
+    type: String,
+    required: [true, 'Product name is required.'], // 根據需要設定為必需
+  },
   quantity: {
     type: Number,
     required: true,
