@@ -154,9 +154,7 @@ router.post(
     }
 
     // 查找或創建購物車
-    let cart = await CartModel.findOne({ user: userId }).populate(
-      items.productName
-    );
+    let cart = await CartModel.findOne({ user: userId }).populate('user');
     if (!cart) {
       cart = new CartModel({
         user: userId,
