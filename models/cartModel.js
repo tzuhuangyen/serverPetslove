@@ -8,7 +8,6 @@ const cartItemSchema = new mongoose.Schema({
     required: true,
   },
   productName: {
-    // 新增這一行
     type: String,
     required: [true, 'Product name is required.'], // 根據需要設定為必需
   },
@@ -17,7 +16,10 @@ const cartItemSchema = new mongoose.Schema({
     required: true,
     min: [1, 'Quantity can not be less than 1.'],
   },
-  price: { type: Number, required: true },
+  price: {
+    type: Number,
+    required: [true, 'Price is required.'],
+  },
 });
 
 //cartModel

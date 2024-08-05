@@ -182,7 +182,13 @@ router.post(
     }
     cart.user = userId;
     // 保存購物車
+    console.log('Before saving cart:', cart);
     await cart.save();
+    console.log(
+      'After saving cart:',
+      await CartModel.findById(cart._id).populate('user')
+    );
+
     console.log('Item added to cart:', cart);
 
     // 關聯查詢 user 的 username
