@@ -126,6 +126,15 @@ router.post(
   handleErrorAsync(async (req, res, next) => {
     const { item } = req.body;
     console.log('Received item:', item); // 添加日志以检查接收到的 item 对象
+    if (
+      !item ||
+      !item.productId ||
+      !item.quantity ||
+      !item.productName ||
+      !item.price
+    ) {
+      return next(appError(400, 'Invalid item data', next));
+    }
 
     const { productId, quantity, productName, price } = item; // Extract productId and quantity from item
     console.log('Extracted data:', {
@@ -180,6 +189,15 @@ router.post(
       cart.items[existingItemIndex].price = price; // 更新價格
       cart.items[existingItemIndex].productName = productName; // 更新產品名稱
     }
+    cart.items.forEach((item) => {
+      if (!item.price || !item.productName) {
+        // If the item is missing the price or productName field, remove it from the cart
+        const index = cart.items.indexOf(item);
+        if (index !== -1) {
+          cart.items.splice(index, 1);
+        }
+      }
+    });
     cart.user = userId;
     // 保存購物車
     console.log('Before saving cart:', cart);
@@ -239,11 +257,36 @@ router.delete(
 #swagger.description = 'validate' */,
   function () {}
 );
-//user orders path
+//user create an order
+const orders = {};
+const ResponseType = 'JSON';
+router.post(
+  '/createOrder',
+  handleErrorAsync(async (req, res, next) => {
+    const data = req.body;
+    const TimeStamp = Math.round(new Date().getTime() / 1000);
+    console.log('TimeStamp:', TimeStamp);
+    console.log('data:', data);
+
+    orders[TimeStamp] = { ...data, TimeStamp, MerchantOrderNo: TimeStamp };
+    console.log('createOrder:', TimeStamp, orders);
+    res.json(orders[TimeStamp]);
+  })
+);
+//confirm the order
 router.get(
-  '/orders',
+  '/confirmOrder',
+  handleError(async (req, res, next) => {
+    res.render('confirm', { title: 'Express' });
+  })
+);
+//取得 orders內容
+router.get(
+  '/getUserOrders/:id',
   /* 	#swagger.tags = ['User-Member:orders']
-#swagger.description = 'validate' */ async (req, res) => {}
+#swagger.description = 'validate' */ handleError(async (req, res, next) => {
+    res.json(orders[id]);
+  })
 );
 //用戶登出
 //log out

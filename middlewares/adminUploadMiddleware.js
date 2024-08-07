@@ -11,8 +11,7 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     //cb() 是一個當篩選完成時被呼叫 Callback 函式，其接受兩個參數：（1）錯誤訊息 （2）說明是否接受該檔案的 Boolean 值
     console.log('Destination directory:', 'public/Images');
-
-    cb(null, 'public/Images'); // 图像存储地方
+    cb(null, path.join(__dirname, '../public/Images'));
   },
   filename: (req, file, cb) => {
     //獲得檔案的原始名稱（名稱＋檔案格式）
