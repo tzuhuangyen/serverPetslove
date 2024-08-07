@@ -11,7 +11,7 @@ const appError = require('../service/appError');
 const handleErrorAsync = require('../service/handleErrorAsync');
 const { isAuth, generateToken } = require('../service/auth');
 const { mergeCart } = require('../controller/cartController');
-const handleError = require('../service/handleError');
+// const handleError = require('../service/handleError');
 //查詢用戶個人資料
 router.get(
   '/myProfile' /* 	#swagger.tags = ['User-Member']
@@ -276,7 +276,7 @@ router.post(
 //confirm the order
 router.get(
   '/confirmOrder',
-  handleError(async (req, res, next) => {
+  handleErrorAsync(async (req, res, next) => {
     res.render('confirm', { title: 'Express' });
   })
 );
@@ -284,9 +284,11 @@ router.get(
 router.get(
   '/getUserOrders/:id',
   /* 	#swagger.tags = ['User-Member:orders']
-#swagger.description = 'validate' */ handleError(async (req, res, next) => {
-    res.json(orders[id]);
-  })
+#swagger.description = 'validate' */ handleErrorAsync(
+    async (req, res, next) => {
+      res.json(orders[id]);
+    }
+  )
 );
 //用戶登出
 //log out
