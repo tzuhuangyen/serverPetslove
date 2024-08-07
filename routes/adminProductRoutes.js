@@ -81,7 +81,6 @@ router.get(
       // 如果未找到商品，返回404錯誤
       return res.status(404).json({ error: 'Product not found' });
     }
-
     // 找到商品後返回成功和商品數據
     res.status(200).json({ status: 'ok', data: product });
   })
