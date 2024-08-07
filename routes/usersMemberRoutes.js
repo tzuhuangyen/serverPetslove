@@ -144,14 +144,6 @@ router.post(
       price,
     });
 
-    if (
-      !productName ||
-      !productId ||
-      quantity === undefined ||
-      price === undefined
-    ) {
-      return next(appError(400, 'Invalid item data', next)); // 验证 item 对象
-    }
     const userId = req.user._id;
     if (!userId) {
       return next(appError(400, 'User ID is missing', next));

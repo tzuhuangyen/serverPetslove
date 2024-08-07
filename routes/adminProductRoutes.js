@@ -14,6 +14,8 @@ router.use(
   '/adminProducts',
   express.static(path.join(__dirname, '../public/Images'))
 );
+console.log(path.join(__dirname, '../public/Images'));
+
 // (__dirname, '..', 'public', 'images')
 // __dirname, '..', 'client', 'public', 'images')
 // router.use(
@@ -105,12 +107,13 @@ router.post(
     if (!req.file) {
       return next(appError(400, 'please upload product information'));
     }
-    console.log(req.body);
+    console.log('Uploaded file:', req.file);
+
     const { productName, type, order, price } = req.body;
-    const imageName = req.file.filename;
+    console.log('Product data:', { productName, type, order, price });
 
     const newProduct = await ProductModel.create({
-      image: imageName,
+      image: req.file.filename, // 存储文件名
       productName,
       type,
       order,
