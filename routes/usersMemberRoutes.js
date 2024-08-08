@@ -124,75 +124,75 @@ router.post(
 #swagger.description = 'post an cart' */,
   isAuth,
   handleErrorAsync(async (req, res, next) => {
-    const { item } = req.body;
-    console.log('Received item:', item); // 添加日志以检查接收到的 item 对象
-    if (
-      !item ||
-      !item.productId ||
-      !item.quantity ||
-      !item.productName ||
-      !item.price
-    ) {
-      return next(appError(400, 'Invalid item data', next));
-    }
+    const { items } = req.body;
+    console.log('Received items:', items); // 添加日志以检查接收到的 item 对象
 
-    const { productId, quantity, productName, price } = item; // Extract productId and quantity from item
-    console.log('Extracted data:', {
-      productId,
-      quantity,
-      productName,
-      price,
-    });
+    // 验证 items 数据的有效性
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return next(appError(400, 'Invalid items data', next));
+    }
 
     const userId = req.user._id;
     if (!userId) {
       return next(appError(400, 'User ID is missing', next));
     }
     // 查找產品信息
-    const product = await ProductModel.findById(productId);
-    if (!product) {
-      return next(appError(404, 'Product not found', next));
-    }
+    // const product = await ProductModel.findById(productId);
+    // if (!product) {
+    //   return next(appError(404, 'Product not found', next));
+    // }
 
     // 查找或創建購物車
-    let cart = await CartModel.findOne({ user: userId }).populate('user');
+    let cart = await CartModel.findOne({ user: userId });
     if (!cart) {
       cart = new CartModel({
         user: userId,
         items: [],
       });
     }
-    // Update existing cart
-    // 查找現有的產品在購物車中的索引
-    const existingItemIndex = cart.items.findIndex(
-      (cartItem) => cartItem.productId.toString() === productId
-    );
-    // 如果產品不在購物車中，添加新項
-    if (existingItemIndex === -1) {
-      cart.items.push({
-        productId,
-        productName,
-        quantity,
-        price,
-      });
-    } else {
-      // 如果產品已在購物車中，更新數量
-      cart.items[existingItemIndex].quantity += quantity;
-      cart.items[existingItemIndex].price = price; // 更新價格
-      cart.items[existingItemIndex].productName = productName; // 更新產品名稱
-    }
-    cart.items.forEach((item) => {
-      if (!item.price || !item.productName) {
-        // If the item is missing the price or productName field, remove it from the cart
-        const index = cart.items.indexOf(item);
-        if (index !== -1) {
-          cart.items.splice(index, 1);
-        }
+    // 创建一个映射表以便查找和更新购物车项
+    const itemMap = new Map();
+    // 处理每个购物车项
+    items.forEach((item) => {
+      const { productId, productName, quantity, price } = item;
+
+      // 验证每个项的字段是否完整
+      if (!productId || !productName || quantity == null || !price) {
+        console.log('Invalid item:', item);
+        return;
+      }
+
+      // 将项的 productId 作为键存储在映射表中
+      itemMap.set(productId.toString(), { productName, quantity, price });
+    });
+
+    // 更新购物车项
+    cart.items.forEach((cartItem) => {
+      const itemData = itemMap.get(cartItem.productId.toString());
+      if (itemData) {
+        cartItem.productName = itemData.productName;
+        cartItem.quantity = itemData.quantity;
+        cartItem.price = itemData.price;
+        itemMap.delete(cartItem.productId.toString());
       }
     });
+    // 将新项添加到购物车
+    itemMap.forEach((itemData, productId) => {
+      cart.items.push({
+        productId,
+        productName: itemData.productName,
+        quantity: itemData.quantity,
+        price: itemData.price,
+      });
+    });
+    // 移除无效项
+    cart.items = cart.items.filter((item) => item.productName && item.price);
+    // Update existing cart
+
     cart.user = userId;
     // 保存購物車
     console.log('Before saving cart:', cart);
+
     await cart.save();
     console.log(
       'After saving cart:',

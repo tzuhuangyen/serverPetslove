@@ -16,39 +16,8 @@ router.use(
 );
 console.log(path.join(__dirname, '../public/Images'));
 
-// (__dirname, '..', 'public', 'images')
-// __dirname, '..', 'client', 'public', 'images')
-// router.use(
-//   '/admin/products',
-//   express.static(path.join(__dirname, '..', 'public', 'Images'))
-// );
-// router.use('/:productId/image', async (req, res) => {
-//   try {
-//     const productId = req.params.productId;
-//     console.log(productId);
-//     const product = await ProductModel.findById(productId);
-//     console.log(product);
-//     if (!product) {
-//       return res.status(404).send('Product not found');
-//     }
-
-//     if (!product.image) {
-//       return res.status(404).send('Product image not found');
-//     }
-//     const imagesPath = path.join(
-//       __dirname,
-//       '..',
-//       'client',
-//       'public',
-//       product.image
-//     );
-//     console.log(imagesPath);
-//     res.sendFile(imagePath);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
-//get all photos of products
+//get all product
+// app.use('/api/admin/products', adminProductRoutes);
 router.get(
   '/',
   /* 	#swagger.tags = ['Admin-Products']
@@ -81,6 +50,7 @@ router.get(
       // 如果未找到商品，返回404錯誤
       return res.status(404).json({ error: 'Product not found' });
     }
+
     // 找到商品後返回成功和商品數據
     res.status(200).json({ status: 'ok', data: product });
   })
