@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 const path = require('path');
 const ProductModel = require('../models/uploadImageModel');
-// const fs = require('fs');
+const fs = require('fs');
 // const testFilePath = path.join(__dirname, '../public/Images/test.txt');
 // fs.writeFile(testFilePath, 'This is a test file', (err) => {
 //   if (err) {
@@ -16,12 +16,20 @@ const ProductModel = require('../models/uploadImageModel');
 //multer定义文件上传的存储引擎、文件名和上传目录等选项
 //三個參數： request 物件、帶有上傳檔案資訊的file 物件、篩選完成後呼叫的cb 函式。
 //{dest: "public/images/uploads"}
+const dirPath = path.resolve(__dirname, '..', '..', 'public', 'Images');
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    fs.mkdirSync(dirPath, { recursive: true }, (err) => {
+      if (err) {
+        console.log('Error creating directory:', err);
+        cb(err, null);
+      } else {
+        console.log('Directory created successfully:', dirPath);
+        cb(null, dirPath);
+      }
+    });
     //cb() 是一個當篩選完成時被呼叫 Callback 函式，其接受兩個參數：（1）錯誤訊息 （2）說明是否接受該檔案的 Boolean 值
-    const dirPath = path.join(__dirname, '..', '..', 'public', 'Images');
-    console.log('Destination directory:', dirPath);
-    cb(null, dirPath);
   },
   filename: (req, file, cb) => {
     //獲得檔案的原始名稱（名稱＋檔案格式）
