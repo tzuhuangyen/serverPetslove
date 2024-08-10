@@ -88,8 +88,8 @@ router.post(
       order,
       price,
     });
-    const saveNewProduct = await newProduct.save();
-    res.status(201).json({ success: true, data: saveNewProduct });
+
+    res.status(201).json({ success: true, data: newProduct });
     console.log('New product created:', newProduct);
   })
 );
