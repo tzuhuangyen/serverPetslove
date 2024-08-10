@@ -159,7 +159,7 @@ router.post(
       // 验证每个项的字段是否完整
       if (!productId || !productName || quantity == null || !price) {
         console.log('Invalid item:', item);
-        return;
+        return next(appError(400, 'Invalid item data', next));
       }
 
       // 将项的 productId 作为键存储在映射表中
@@ -173,6 +173,8 @@ router.post(
         cartItem.productName = itemData.productName;
         cartItem.quantity = itemData.quantity;
         cartItem.price = itemData.price;
+        cartItem.image = itemData.image;
+        itemMap.delete(cartItem.productId.toString());
         itemMap.delete(cartItem.productId.toString());
       }
     });
@@ -183,6 +185,7 @@ router.post(
         productName: itemData.productName,
         quantity: itemData.quantity,
         price: itemData.price,
+        image: itemData.image,
       });
     });
     // 移除无效项

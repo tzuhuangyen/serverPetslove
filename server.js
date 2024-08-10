@@ -40,7 +40,10 @@ console.log(imagesPath);
 console.log(`Resolved images path: ${imagesPath}`);
 
 // express.static('public/Images')
-app.use('/adminProducts', express.static('public/Images'));
+app.use(
+  '/adminProducts',
+  express.static(path.join(__dirname, 'public/Images'))
+);
 
 app.use((req, res, next) => {
   console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url}`);

@@ -10,11 +10,11 @@ const appError = require('../service/appError');
 const handleErrorAsync = require('../service/handleErrorAsync');
 
 // 设置静态文件夹来提供图片
-router.use(
-  '/adminProducts',
-  express.static(path.join(__dirname, '../public/Images'))
-);
-console.log(path.join(__dirname, '../public/Images'));
+// router.use(
+//   '/adminProducts',
+//   express.static(path.join(__dirname, '../public/Images'))
+// );
+// console.log(path.join(__dirname, '../public/Images'));
 
 //get all product
 // app.use('/api/admin/products', adminProductRoutes);
