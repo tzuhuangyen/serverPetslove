@@ -8,12 +8,9 @@ const handleErrorAsync = require('./handleErrorAsync');
 
 //middleware 確認token是否正確或沒過期
 const isAuth = handleErrorAsync(async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer')) {
-    return next(appError(401, 'Authentication failed!'));
-  }
-  const token = authHeader.split(' ')[1];
-  console.log('token:', token);
+  const token = req.headers.authorization?.split(' ')[1];
+  console.log('Received token:', token);
+
   if (!token) {
     return next(appError(401, 'Login first,please ', next));
   }

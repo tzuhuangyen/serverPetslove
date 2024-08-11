@@ -154,7 +154,7 @@ router.post(
     const itemMap = new Map();
     // 处理每个购物车项
     items.forEach((item) => {
-      const { productId, productName, quantity, price } = item;
+      const { productId, productName, quantity, price, image } = item;
 
       // 验证每个项的字段是否完整
       if (!productId || !productName || quantity == null || !price) {
@@ -163,7 +163,12 @@ router.post(
       }
 
       // 将项的 productId 作为键存储在映射表中
-      itemMap.set(productId.toString(), { productName, quantity, price });
+      itemMap.set(productId.toString(), {
+        productName,
+        quantity,
+        price,
+        image,
+      });
     });
 
     // 更新购物车项
@@ -174,7 +179,6 @@ router.post(
         cartItem.quantity = itemData.quantity;
         cartItem.price = itemData.price;
         cartItem.image = itemData.image;
-        itemMap.delete(cartItem.productId.toString());
         itemMap.delete(cartItem.productId.toString());
       }
     });
