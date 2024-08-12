@@ -124,93 +124,80 @@ router.post(
 #swagger.description = 'post an cart' */,
   isAuth,
   handleErrorAsync(async (req, res, next) => {
-    const { items } = req.body;
-    console.log('Received items:', items); // 添加日志以检查接收到的 item 对象
-
-    // 验证 items 数据的有效性
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return next(appError(400, 'Invalid items data', next));
-    }
-
-    const userId = req.user._id;
-    if (!userId) {
-      return next(appError(400, 'User ID is missing', next));
-    }
-    // 查找產品信息
-    // const product = await ProductModel.findById(productId);
-    // if (!product) {
-    //   return next(appError(404, 'Product not found', next));
-    // }
-
-    // 查找或創建購物車
-    let cart = await CartModel.findOne({ user: userId });
-    if (!cart) {
-      cart = new CartModel({
-        user: userId,
-        items: [],
-      });
-    }
-    // 创建一个映射表以便查找和更新购物车项
-    const itemMap = new Map();
-    // 处理每个购物车项
-    items.forEach((item) => {
-      const { productId, productName, quantity, price, image } = item;
-
-      // 验证每个项的字段是否完整
-      if (!productId || !productName || quantity == null || !price) {
-        console.log('Invalid item:', item);
-        return next(appError(400, 'Invalid item data', next));
+    try {
+      const { items } = req.body;
+      console.log('Received items:', items);
+      if (!items || !Array.isArray(items) || items.length === 0) {
+        return next(appError(400, 'Invalid items data', next));
       }
 
-      // 将项的 productId 作为键存储在映射表中
-      itemMap.set(productId.toString(), {
-        productName,
-        quantity,
-        price,
-        image,
-      });
-    });
-
-    // 更新购物车项
-    cart.items.forEach((cartItem) => {
-      const itemData = itemMap.get(cartItem.productId.toString());
-      if (itemData) {
-        cartItem.productName = itemData.productName;
-        cartItem.quantity = itemData.quantity;
-        cartItem.price = itemData.price;
-        cartItem.image = itemData.image;
-        itemMap.delete(cartItem.productId.toString());
+      const userId = req.user?._id;
+      console.log('User ID:', userId);
+      if (!userId) {
+        return next(appError(400, 'User ID is missing', next));
       }
-    });
-    // 将新项添加到购物车
-    itemMap.forEach((itemData, productId) => {
-      cart.items.push({
-        productId,
-        productName: itemData.productName,
-        quantity: itemData.quantity,
-        price: itemData.price,
-        image: itemData.image,
+
+      let cart = await CartModel.findOne({ user: userId });
+      if (!cart) {
+        cart = new CartModel({
+          user: userId,
+          items: [],
+        });
+      }
+
+      const itemMap = new Map();
+      items.forEach((item) => {
+        const { productId, productName, quantity, price, image } = item;
+        if (!productId || !productName || quantity == null || !price) {
+          console.log('Invalid item:', item);
+          return next(appError(400, 'Invalid item data', next));
+        }
+
+        itemMap.set(productId.toString(), {
+          productName,
+          quantity,
+          price,
+          image,
+        });
       });
-    });
-    // 移除无效项
-    cart.items = cart.items.filter((item) => item.productName && item.price);
-    // Update existing cart
 
-    cart.user = userId;
-    // 保存購物車
-    console.log('Before saving cart:', cart);
+      cart.items.forEach((cartItem) => {
+        const itemData = itemMap.get(cartItem.productId.toString());
+        if (itemData) {
+          cartItem.productName = itemData.productName;
+          cartItem.quantity = itemData.quantity;
+          cartItem.price = itemData.price;
+          cartItem.image = itemData.image;
+          itemMap.delete(cartItem.productId.toString());
+        }
+      });
 
-    await cart.save();
-    console.log(
-      'After saving cart:',
-      await CartModel.findById(cart._id).populate('user')
-    );
+      itemMap.forEach((itemData, productId) => {
+        cart.items.push({
+          productId,
+          productName: itemData.productName,
+          quantity: itemData.quantity,
+          price: itemData.price,
+          image: itemData.image,
+        });
+      });
 
-    console.log('Item added to cart:', cart);
+      cart.items = cart.items.filter((item) => item.productName && item.price);
+      cart.user = userId;
 
-    // 關聯查詢 user 的 username
-    await cart.populate('user', 'username');
-    res.status(200).json({ cart });
+      console.log('Before saving cart:', cart);
+      await cart.save();
+      console.log(
+        'After saving cart:',
+        await CartModel.findById(cart._id).populate('user')
+      );
+
+      await cart.populate('user', 'username');
+      res.status(200).json({ cart });
+    } catch (error) {
+      console.error('Error processing cart request:', error);
+      next(appError(500, 'Internal Server Error', next));
+    }
   })
 );
 // patch cart with new quantity

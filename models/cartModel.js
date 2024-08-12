@@ -21,6 +21,7 @@ const cartItemSchema = new mongoose.Schema(
       required: true,
       min: [1, 'Quantity can not be less than 1.'],
     },
+    image: String,
   },
   { versionKey: false }
 );
@@ -33,7 +34,7 @@ const cartSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: 'User',
       required: true,
-      // unique: true,
+      unique: true,
     },
     items: [cartItemSchema],
   },
