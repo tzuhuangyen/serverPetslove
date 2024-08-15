@@ -137,7 +137,7 @@ router.put(
         return next(appError(400, 'User ID is missing', next));
       }
       // Ensure `userId` is not null or undefined
-      if (!userId || userId === 'null') {
+      if (userId === 'null') {
         return next(appError(400, 'Invalid User ID', next));
       }
       let cart = await CartModel.findOne({ user: userId });
@@ -155,7 +155,6 @@ router.put(
           console.log('Invalid item:', item);
           return next(appError(400, 'Invalid item data', next));
         }
-
         itemMap.set(productId.toString(), {
           productName,
           quantity,
