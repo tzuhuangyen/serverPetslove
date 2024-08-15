@@ -118,8 +118,8 @@ router.get(
 //   mergeCart
 // );
 
-// 用戶登戶後 add to cart
-router.post(
+// 用戶登戶後 merge cart
+router.put(
   '/cart' /* 	#swagger.tags = ['User-Member:cart']
 #swagger.description = 'post an cart' */,
   isAuth,
