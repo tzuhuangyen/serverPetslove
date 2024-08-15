@@ -136,7 +136,10 @@ router.put(
       if (!userId) {
         return next(appError(400, 'User ID is missing', next));
       }
-
+      // Ensure `userId` is not null or undefined
+      if (!userId || userId === 'null') {
+        return next(appError(400, 'Invalid User ID', next));
+      }
       let cart = await CartModel.findOne({ user: userId });
       if (!cart) {
         cart = new CartModel({
@@ -187,12 +190,11 @@ router.put(
 
       console.log('Before saving cart:', cart);
       await cart.save();
-      console.log(
-        'After saving cart:',
-        await CartModel.findById(cart._id).populate('user')
-      );
+      await cart.populate({
+        path: 'user',
+        select: 'username',
+      });
 
-      await cart.populate('user', 'username');
       res.status(200).json({ cart });
     } catch (error) {
       console.error('Error processing cart request:', error);
