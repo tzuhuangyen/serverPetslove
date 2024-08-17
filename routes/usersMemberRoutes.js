@@ -162,7 +162,7 @@ router.put(
           image,
         });
       });
-
+      // Update existing items
       cart.items.forEach((cartItem) => {
         const itemData = itemMap.get(cartItem.productId.toString());
         if (itemData) {
@@ -175,13 +175,21 @@ router.put(
       });
 
       itemMap.forEach((itemData, productId) => {
-        cart.items.push({
-          productId,
-          productName: itemData.productName,
-          quantity: itemData.quantity,
-          price: itemData.price,
-          image: itemData.image,
-        });
+        const existingItem = cart.items.find(
+          (cartItem) => cartItem.productId.toString() === productId
+        );
+        if (existingItem) {
+          // If exists, update quantity
+          existingItem.quantity += itemData.quantity;
+        } else {
+          cart.items.push({
+            productId,
+            productName: itemData.productName,
+            quantity: itemData.quantity,
+            price: itemData.price,
+            image: itemData.image,
+          });
+        }
       });
 
       cart.items = cart.items.filter((item) => item.productName && item.price);
@@ -228,14 +236,10 @@ router.patch(
       return next(appError(404, 'Product not found in cart', next));
     }
     userCart.items[updateItemIndex].quantity = quantity;
-    userCart.totalPrice = userCart.items.reduce(
-      (acc, item) => acc + item.totalPrice,
-      0
-    );
-    console.log('userCart.totalPrice:', userCart.totalPrice);
+
     // Update the quantity and total for the specific item
     await userCart.save(); // Save the updated cart
-    res.json({ message: 'Quantity updated' });
+    res.json({ message: 'Quantity updated successfully' });
   })
 );
 // delete the item
