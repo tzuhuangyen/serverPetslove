@@ -166,14 +166,14 @@ router.put(
       cart.items.forEach((cartItem) => {
         const itemData = itemMap.get(cartItem.productId.toString());
         if (itemData) {
-          cartItem.productName = itemData.productName;
+          // cartItem.productName = itemData.productName;
           cartItem.quantity = itemData.quantity;
-          cartItem.price = itemData.price;
-          cartItem.image = itemData.image;
+          // cartItem.price = itemData.price;
+          // cartItem.image = itemData.image;
           itemMap.delete(cartItem.productId.toString());
         }
       });
-
+      // Add new items to the cart
       itemMap.forEach((itemData, productId) => {
         const existingItem = cart.items.find(
           (cartItem) => cartItem.productId.toString() === productId
