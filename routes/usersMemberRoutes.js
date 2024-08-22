@@ -217,7 +217,11 @@ router.post(
   isAuth,
   handleErrorAsync(async (req, res, next) => {
     const { items } = req.body;
-    const userId = req.user._id;
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is missing' }); // 如果 userId 不存在，返回錯誤
+    }
 
     // Then, use userId to find the user's cart and update the item within it
     let userCart = await CartModel.findOne({ userId });
