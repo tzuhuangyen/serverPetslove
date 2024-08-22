@@ -216,7 +216,7 @@ router.post(
 #swagger.description = 'validate' */,
   isAuth,
   handleErrorAsync(async (req, res, next) => {
-    const { productId, productName, quantity, price, image } = req.body;
+    const { items } = req.body;
     const userId = req.user._id;
 
     // Then, use userId to find the user's cart and update the item within it
@@ -228,18 +228,20 @@ router.post(
       });
     }
 
-    // Check if the item already exists in the cart
-    const itemIndex = userCart.items.findIndex(
-      (item) => item.productId.toString() === productId
-    );
-
-    if (itemIndex > -1) {
-      // 如果該商品已存在，則更新數量
-      userCart.items[itemIndex].quantity += quantity;
-    } else {
-      // 如果該商品不存在，則添加新商品
-      userCart.items.push({ productId, productName, quantity, price, image });
-    }
+    items.forEach((item) => {
+      const { productId, productName, quantity, price, image } = item;
+      // Check if the item already exists in the cart
+      const itemIndex = userCart.items.findIndex(
+        (cartItem) => cartItem.productId.toString() === productId
+      );
+      if (itemIndex > -1) {
+        // 如果該商品已存在，則更新數量
+        userCart.items[itemIndex].quantity += quantity;
+      } else {
+        // 如果該商品不存在，則添加新商品
+        userCart.items.push({ productId, productName, quantity, price, image });
+      }
+    });
 
     await userCart.save(); // 保存購物車
     res.status(200).json(userCart); // 返回更新後的購物車
