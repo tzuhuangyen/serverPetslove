@@ -12,6 +12,7 @@ const handleErrorAsync = require('../service/handleErrorAsync');
 const { isAuth, generateToken } = require('../service/auth');
 const { mergeCart } = require('../controller/cartController');
 // const handleError = require('../service/handleError');
+// app.use('/api/users/member', usersMemberRoutes);
 //查詢用戶個人資料
 router.get(
   '/myProfile' /* 	#swagger.tags = ['User-Member']
@@ -209,6 +210,42 @@ router.put(
     }
   })
 );
+//加入購物車addItemToServerCart
+router.post(
+  '/cart' /* 	#swagger.tags = ['User-Member:cart']
+#swagger.description = 'validate' */,
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    const { productId, productName, quantity, price, image } = req.body;
+    const userId = req.user._id;
+
+    // Then, use userId to find the user's cart and update the item within it
+    let userCart = await CartModel.findOne({ userId });
+    if (!userCart) {
+      userCart = new CartModel({
+        user: userId,
+        items: [],
+      });
+    }
+
+    // Check if the item already exists in the cart
+    const itemIndex = userCart.items.findIndex(
+      (item) => item.productId.toString() === productId
+    );
+
+    if (itemIndex > -1) {
+      // 如果該商品已存在，則更新數量
+      userCart.items[itemIndex].quantity += quantity;
+    } else {
+      // 如果該商品不存在，則添加新商品
+      userCart.items.push({ productId, quantity });
+    }
+
+    await userCart.save(); // 保存購物車
+    res.status(200).json(userCart); // 返回更新後的購物車
+  })
+);
+
 // patch cart with new quantity
 router.patch(
   '/cart/:productId' /* 	#swagger.tags = ['User-Member:cart']
