@@ -238,7 +238,7 @@ router.post(
       userCart.items[itemIndex].quantity += quantity;
     } else {
       // 如果該商品不存在，則添加新商品
-      userCart.items.push({ productId, quantity });
+      userCart.items.push({ productId, productName, quantity, price, image });
     }
 
     await userCart.save(); // 保存購物車
