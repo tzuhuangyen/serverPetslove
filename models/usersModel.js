@@ -28,15 +28,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['admin', 'user'],
     },
-    createdAt: {
-      type: Date,
-      default: Date.new,
-    },
+    // createdAt: {
+    //   type: Date,
+    //   default: Date.now,
+    // },
     //select: false,前台不會顯示
   },
   {
     versionKey: false,
-    //timestamps: true // 加上timestamps 會自動加上createdAt跟updatedAt
+    timestamps: true, // 加上timestamps 會自動加上createdAt跟updatedAt
   }
 );
 //可以在options地方 versionKey可以選擇隱藏版本號
