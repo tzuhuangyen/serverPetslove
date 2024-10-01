@@ -43,7 +43,7 @@ router.post(
   })
 );
 
-// Post /login登入功能
+// /api/users登入功能
 router.post(
   '/login' /* 	#swagger.tags = ['User-SignUp & Login/out']
 #swagger.description = 'validate' */,
@@ -60,7 +60,6 @@ router.post(
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       console.log('Invalid login attempt for user:', username); // Log incorrect password attempt
-
       return next(appError(401, 'Invalid password', next));
     }
     // 取得login後的new token
@@ -70,6 +69,10 @@ router.post(
     console.log('User logged:', username); // 登录成功
 
     // 如果用户名和密码都匹配，则登录成功
+    return res.status(200).json({
+      token,
+      loggedInUsername: user.username, // 返回用戶名
+    });
   })
 );
 
