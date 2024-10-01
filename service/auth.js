@@ -44,12 +44,10 @@ const generateToken = (user, statusCode, res) => {
   });
   //to prevent accidentally leaking password information to the client
   user.password = undefined;
-  res.status(statusCode).json({
+  return res.status(200).json({
     status: 'success',
-
     token,
-    username: user.username,
+    loggedInUsername: user.username, // 返回用戶名
   });
-  return token;
 };
 module.exports = { isAuth, generateToken };

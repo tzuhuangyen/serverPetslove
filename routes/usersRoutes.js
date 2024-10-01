@@ -67,13 +67,6 @@ router.post(
     console.log('Generated login token:', token); // 输出生成的 token
     // 登录成功，生成 JWT 令牌并返回给客户端
     console.log('User logged:', user.username); // 登录成功
-
-    // 如果用户名和密码都匹配，则登录成功
-    return res.status(200).json({
-      status: 'success',
-      token,
-      loggedInUsername: user.username, // 返回用戶名
-    });
   })
 );
 
