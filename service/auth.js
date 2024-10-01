@@ -45,7 +45,6 @@ const generateToken = (user, statusCode, res) => {
   //to prevent accidentally leaking password information to the client
   user.password = undefined;
   return res.status(200).json({
-    status: 'success',
     token,
     loggedInUsername: user.username, // 返回用戶名
   });
