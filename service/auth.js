@@ -46,9 +46,9 @@ const generateToken = (user, statusCode, res) => {
   user.password = undefined;
   res.status(statusCode).json({
     status: 'success',
-    user: { token },
+
     token,
-    name: user.name,
+    username: user.username,
   });
   return token;
 };
