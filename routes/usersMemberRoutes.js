@@ -248,7 +248,7 @@ router.post(
     });
 
     await userCart.save(); // 保存購物車
-    res.status(200).json(userCart); // 返回更新後的購物車
+    res.status(200).json({ success: true, data: cart }); // 返回更新後的購物車
   })
 );
 
