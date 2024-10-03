@@ -226,7 +226,7 @@ router.post(
     }
 
     // Then, use userId to find the user's cart and update the item within it
-    let userCart = await CartModel.findOne({ userId });
+    let userCart = await CartModel.findOne({ user: userId });
     if (!userCart) {
       userCart = new CartModel({
         user: userId,
