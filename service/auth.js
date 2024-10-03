@@ -47,6 +47,7 @@ const generateToken = (user, statusCode, res) => {
   return res.status(200).json({
     token,
     loggedInUsername: user.username, // 返回用戶名
+    userId: user._id,
   });
 };
 module.exports = { isAuth, generateToken };
