@@ -105,10 +105,12 @@ router.get(
     //   path: 'items.productId',
     //   model: 'Product',
     // });
-    res.status(200).json({ cart });
+
     if (!cart) {
       return next(appError(404, 'user Cart not found', next));
     }
+    //if found user's cart, return cart
+    res.status(200).json({ cart });
   })
 );
 //用戶登戶後 merged cart
