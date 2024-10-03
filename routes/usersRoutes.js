@@ -39,7 +39,6 @@ router.post(
       username,
       password: hashedPassword,
     });
-    generateToken(newUser, 201, res);
   })
 );
 
