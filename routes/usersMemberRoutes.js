@@ -1,4 +1,6 @@
 const express = require('express');
+const mongoose = require('mongoose');
+
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -280,7 +282,7 @@ router.post(
       console.error('Error saving cart:', error);
       return res.status(500).json({
         status: 'error',
-        message: 'Something went wrong while saving the cart',
+        message: error.message || 'Something went wrong while saving the cart',
         details: error.message,
       });
     }
