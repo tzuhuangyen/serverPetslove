@@ -221,10 +221,13 @@ router.post(
     const { items } = req.body;
     const userId = req.userId; // from `isAuth` to get `userId`
     console.log('userId:', userId);
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is missing' }); // 如果 userId 不存在，返回錯誤
+    if (userId === null || userId === undefined) {
+      return res
+        .status(400)
+        .json({ message: 'User ID cannot be null or undefined' });
     }
-    console.log('User ID:', userId); // confirm userId is correct
+
+    console.log('User ID before saving cart:', userCart.user);
 
     // Then, use userId to find the user's cart and update the item within it
     let userCart = await CartModel.findOne({ user: userId });
