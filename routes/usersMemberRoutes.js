@@ -219,8 +219,8 @@ router.post(
   isAuth,
   handleErrorAsync(async (req, res, next) => {
     const { items } = req.body;
-    const userId = req.userId;
-
+    const userId = req.userId; // from `isAuth` to get `userId`
+    console.log(userId);
     if (!userId) {
       return res.status(400).json({ message: 'User ID is missing' }); // 如果 userId 不存在，返回錯誤
     }
@@ -254,7 +254,7 @@ router.post(
       success: true,
       data: {
         cart: userCart,
-      }, // 返回更新後的購物車
+      },
     });
   })
 );
