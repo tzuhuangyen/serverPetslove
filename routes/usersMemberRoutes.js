@@ -219,7 +219,7 @@ router.post(
   isAuth,
   handleErrorAsync(async (req, res, next) => {
     const { items } = req.body;
-    const userId = req.user?._id;
+    const userId = req.userId;
 
     if (!userId) {
       return res.status(400).json({ message: 'User ID is missing' }); // 如果 userId 不存在，返回錯誤

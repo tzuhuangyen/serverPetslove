@@ -17,7 +17,7 @@ const isAuth = handleErrorAsync(async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     console.log('Decoded token:', decoded); // This should show the decoded JWT payload
-
+    console.log('Decoded userId:', decoded.userId);
     const currentUser = await UserModel.findById(decoded.userId);
     if (!currentUser) {
       return next(appError(401, 'User not found!'));
