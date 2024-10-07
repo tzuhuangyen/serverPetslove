@@ -221,6 +221,14 @@ router.post(
     const { items } = req.body;
     const userId = req.userId; // from `isAuth` to get `userId`
     console.log('userId:', userId);
+    // Validate items array
+    for (const item of items) {
+      if (!mongoose.Types.ObjectId.isValid(item.productId)) {
+        return res
+          .status(400)
+          .json({ message: `Invalid ObjectId: ${item.productId}` });
+      }
+    }
     if (userId === null || userId === undefined) {
       return res
         .status(400)
