@@ -227,16 +227,23 @@ router.post(
         .json({ message: 'User ID cannot be null or undefined' });
     }
 
-    console.log('User ID before saving cart:', userCart.user);
-
-    // Then, use userId to find the user's cart and update the item within it
-    let userCart = await CartModel.findOne({ user: userId });
-    if (!userCart) {
-      userCart = new CartModel({
-        user: userId,
-        items: [],
-      });
+    let userCart;
+    try {
+      // Then, use userId to find the user's cart and update the item within it
+      userCart = await CartModel.findOne({ user: userId });
+      if (!userCart) {
+        userCart = new CartModel({
+          user: userId,
+          items: [],
+        });
+      }
+    } catch (error) {
+      console.error('Error finding user cart:', error);
+      return res
+        .status(500)
+        .json({ status: 'error', message: 'Error finding user cart' });
     }
+    console.log('User ID before saving cart:', userCart.user);
 
     items.forEach((item) => {
       const { productId, productName, quantity, price, image } = item;
@@ -253,13 +260,21 @@ router.post(
       }
     });
 
-    await userCart.save(); // 保存購物車
-    res.status(200).json({
-      success: true,
-      data: {
-        cart: userCart,
-      },
-    });
+    try {
+      await userCart.save(); // 保存購物車
+      res.status(200).json({
+        success: true,
+        data: {
+          cart: userCart,
+        },
+      });
+    } catch (error) {
+      console.error('Error saving cart:', error);
+      return res.status(500).json({
+        status: 'error',
+        message: 'Something went wrong while saving the cart',
+      });
+    }
   })
 );
 
