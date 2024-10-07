@@ -222,7 +222,18 @@ router.post(
   handleErrorAsync(async (req, res, next) => {
     const { items } = req.body;
     const userId = req.userId; // from `isAuth` to get `userId`
-    console.log('userId:', userId);
+    console.log('Decoded userId:', userId);
+
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ message: 'User ID cannot be null or undefined' });
+    }
+    console.log(
+      'Final userCart before saving:',
+      JSON.stringify(userCart, null, 2)
+    );
+
     // Validate items array
     for (const item of items) {
       if (!mongoose.Types.ObjectId.isValid(item.productId)) {
@@ -231,14 +242,11 @@ router.post(
           .json({ message: `Invalid ObjectId: ${item.productId}` });
       }
     }
-    if (userId === null || userId === undefined) {
-      return res
-        .status(400)
-        .json({ message: 'User ID cannot be null or undefined' });
-    }
 
     let userCart;
     try {
+      console.log('Before finding user cart, userId:', userId);
+
       // Then, use userId to find the user's cart and update the item within it
       userCart = await CartModel.findOne({ user: userId });
       if (!userCart) {
@@ -253,7 +261,10 @@ router.post(
         .status(500)
         .json({ status: 'error', message: 'Error finding user cart' });
     }
-    console.log('User ID before saving cart:', userCart.user);
+    console.log(
+      'UserCart before updating items:',
+      JSON.stringify(userCart, null, 2)
+    );
 
     items.forEach((item) => {
       const { productId, productName, quantity, price, image } = item;
@@ -269,8 +280,18 @@ router.post(
         userCart.items.push({ productId, productName, quantity, price, image });
       }
     });
+    console.log('UserCart before saving:', JSON.stringify(userCart, null, 2));
 
     try {
+      if (!userCart.user || userCart.user === null) {
+        console.error(
+          'Error: userCart.user is null or undefined before saving'
+        );
+        return res.status(500).json({
+          status: 'error',
+          message: 'User ID is missing from the cart before saving.',
+        });
+      }
       await userCart.save(); // 保存購物車
       res.status(200).json({
         success: true,
