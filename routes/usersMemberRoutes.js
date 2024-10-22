@@ -229,10 +229,6 @@ router.post(
         .status(400)
         .json({ message: 'User ID cannot be null or undefined' });
     }
-    console.log(
-      'Final userCart before saving:',
-      JSON.stringify(userCart, null, 2)
-    );
 
     // Validate items array
     for (const item of items) {
@@ -243,7 +239,7 @@ router.post(
       }
     }
 
-    let userCart;
+    let userCart; //init
     try {
       console.log('Before finding user cart, userId:', userId);
 
@@ -255,34 +251,32 @@ router.post(
           items: [],
         });
       }
-    } catch (error) {
-      console.error('Error finding user cart:', error);
-      return res
-        .status(500)
-        .json({ status: 'error', message: 'Error finding user cart' });
-    }
-    console.log(
-      'UserCart before updating items:',
-      JSON.stringify(userCart, null, 2)
-    );
-
-    items.forEach((item) => {
-      const { productId, productName, quantity, price, image } = item;
-      // Check if the item already exists in the cart
-      const itemIndex = userCart.items.findIndex(
-        (cartItem) => cartItem.productId.toString() === productId
+      console.log(
+        'Final userCart before saving:',
+        JSON.stringify(userCart, null, 2)
       );
-      if (itemIndex > -1) {
-        // 如果該商品已存在，則更新數量
-        userCart.items[itemIndex].quantity += quantity;
-      } else {
-        // 如果該商品不存在，則添加新商品
-        userCart.items.push({ productId, productName, quantity, price, image });
-      }
-    });
-    console.log('UserCart before saving:', JSON.stringify(userCart, null, 2));
 
-    try {
+      items.forEach((item) => {
+        const { productId, productName, quantity, price, image } = item;
+        // Check if the item already exists in the cart
+        const itemIndex = userCart.items.findIndex(
+          (cartItem) => cartItem.productId.toString() === productId
+        );
+        if (itemIndex > -1) {
+          // 如果該商品已存在，則更新數量
+          userCart.items[itemIndex].quantity += quantity;
+        } else {
+          // 如果該商品不存在，則添加新商品
+          userCart.items.push({
+            productId,
+            productName,
+            quantity,
+            price,
+            image,
+          });
+        }
+      });
+      console.log('UserCart before saving:', JSON.stringify(userCart, null, 2));
       if (!userCart.user || userCart.user === null) {
         console.error(
           'Error: userCart.user is null or undefined before saving'
@@ -300,10 +294,10 @@ router.post(
         },
       });
     } catch (error) {
-      console.error('Error saving cart:', error);
+      console.error('Error finding user cart:', error);
       return res.status(500).json({
         status: 'error',
-        message: error.message || 'Something went wrong while saving the cart',
+        message: 'Something went wrong while finding the cart',
         details: error.message,
       });
     }
