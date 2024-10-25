@@ -229,7 +229,10 @@ router.post(
         .status(400)
         .json({ message: 'User ID cannot be null or undefined' });
     }
-
+    // 验证 items 数组
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: 'Items array is required.' });
+    }
     // Validate items array
     for (const item of items) {
       if (!mongoose.Types.ObjectId.isValid(item.productId)) {
