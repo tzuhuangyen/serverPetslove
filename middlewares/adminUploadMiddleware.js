@@ -16,7 +16,7 @@ const fs = require('fs');
 //multer定义文件上传的存储引擎、文件名和上传目录等选项
 //三個參數： request 物件、帶有上傳檔案資訊的file 物件、篩選完成後呼叫的cb 函式。
 //{dest: "public/images/uploads"}
-const dirPath = path.resolve(__dirname, '..', '..', 'public', 'Images');
+const dirPath = path.resolve(__dirname, '..', '..', 'public', 'images');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
