@@ -39,7 +39,7 @@ console.log(`Resolved images path: ${imagesPath}`);
 // express.static('public/Images')
 app.use(
   '/adminProducts',
-  express.static(path.join(__dirname, 'public/Images'))
+  express.static(path.join(__dirname, 'public/images'))
 );
 
 app.use((req, res, next) => {
