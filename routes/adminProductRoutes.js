@@ -93,7 +93,7 @@ router.post(
     console.log('New product created:', newProduct);
   })
 );
-
+//update product
 router.patch(
   '/updateProduct/:id' /* 	#swagger.tags = ['Admin-Products']
 #swagger.description = 'update Products by id' */,
