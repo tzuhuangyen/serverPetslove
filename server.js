@@ -32,7 +32,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-const imagesPath = path.join(__dirname, '../public/Images');
+const imagesPath = path.join(__dirname, '../public/images');
 console.log(imagesPath);
 console.log(`Resolved images path: ${imagesPath}`);
 
