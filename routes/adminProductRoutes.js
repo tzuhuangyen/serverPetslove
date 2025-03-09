@@ -73,6 +73,7 @@ router.post(
     } */
   adminUploadMiddleware.single('image'),
   handleErrorAsync(async (req, res, next) => {
+    console.log('Inside /uploadProduct route');
     if (!req.file) {
       return next(appError(400, 'please upload product information'));
     }
@@ -80,6 +81,7 @@ router.post(
 
     const { productName, type, order, price } = req.body;
     console.log('Product data:', { productName, type, order, price });
+    console.log('Creating new product in database...');
 
     const newProduct = await ProductModel.create({
       image: req.file.filename, // 存储文件名

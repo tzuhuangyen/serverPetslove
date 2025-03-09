@@ -20,15 +20,23 @@ const dirPath = path.resolve(__dirname, '..', '..', 'public', 'Images');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    fs.mkdirSync(dirPath, { recursive: true }, (err) => {
-      if (err) {
-        console.log('Error creating directory:', err);
-        cb(err, null);
-      } else {
+    console.log('Setting upload destination...');
+    console.log('Resolved directory path:', dirPath);
+
+    try {
+      if (!fs.existsSync(dirPath)) {
+        console.log('Directory does not exist. Attempting to create...');
+        fs.mkdirSync(dirPath, { recursive: true });
         console.log('Directory created successfully:', dirPath);
-        cb(null, dirPath);
+      } else {
+        console.log('Directory already exists:', dirPath);
       }
-    });
+      cb(null, dirPath);
+    } catch (err) {
+      console.error('Error creating directory:', err);
+      cb(err, null);
+    }
+
     //cb() 是一個當篩選完成時被呼叫 Callback 函式，其接受兩個參數：（1）錯誤訊息 （2）說明是否接受該檔案的 Boolean 值
   },
   filename: (req, file, cb) => {
