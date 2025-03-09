@@ -36,7 +36,7 @@ const imagesPath = path.join(__dirname, '../public/images');
 console.log(imagesPath);
 console.log(`Resolved images path: ${imagesPath}`);
 
-// express.static('public/Images')
+// express.static('public/images')
 app.use(
   '/adminProducts',
   express.static(path.join(__dirname, 'public/images'))

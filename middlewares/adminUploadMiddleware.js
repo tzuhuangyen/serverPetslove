@@ -4,7 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const ProductModel = require('../models/uploadImageModel');
 const fs = require('fs');
-// const testFilePath = path.join(__dirname, '../public/Images/test.txt');
+// const testFilePath = path.join(__dirname, '../public/images/test.txt');
 // fs.writeFile(testFilePath, 'This is a test file', (err) => {
 //   if (err) {
 //     console.error('Write test failed:', err);
