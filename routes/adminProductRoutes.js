@@ -10,10 +10,10 @@ const appError = require('../service/appError');
 const handleErrorAsync = require('../service/handleErrorAsync');
 
 // 设置静态文件夹来提供图片
-router.use(
-  '/adminProducts',
-  express.static(path.join(__dirname, '../public/images'))
-);
+// router.use(
+//   '/adminProducts',
+//   express.static(path.join(__dirname, '../public/images'))
+// );
 // console.log(path.join(__dirname, '../public/images'));
 
 //get all product
@@ -31,8 +31,18 @@ router.get(
       description: "got all products successfully." } */
   handleErrorAsync(async (req, res) => {
     // 从 MongoDB 中检索所有产品数据
-    const data = await ProductModel.find().sort({ createdAt: 'descending' });
-    console.log(data);
+    const data = await ProductModel.find()
+      .select('-image.data')
+      .sort({ createdAt: 'descending' });
+    // 为每个产品添加图片URL
+    const productsWithImageUrl = data.map((product) => {
+      const productObj = product.toObject();
+      // 添加图片URL
+      productObj.imageUrl = `${req.protocol}://${req.get(
+        'host'
+      )}/api/admin/products/image/${product._id}`;
+      return productObj;
+    });
     res.send({ status: 'ok', data: data });
   })
 );
@@ -78,13 +88,16 @@ router.post(
       return next(appError(400, 'please upload product information'));
     }
     console.log('Uploaded file:', req.file);
+    console.log('File received:', req.file.originalname);
 
     const { productName, type, order, price } = req.body;
     console.log('Product data:', { productName, type, order, price });
     console.log('Creating new product in database...');
-
     const newProduct = await ProductModel.create({
-      image: req.file.filename, // 存储文件名
+      image: {
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+      },
       productName,
       type,
       order,
@@ -92,7 +105,27 @@ router.post(
     });
 
     res.status(201).json({ success: true, data: newProduct });
+
     console.log('New product created:', newProduct);
+  })
+);
+// 添加到adminProductRoutes.js
+// 从MongoDB提供图片
+
+router.get(
+  '/image/:productId',
+  handleErrorAsync(async (req, res) => {
+    const productId = req.params.productId;
+    const product = await ProductModel.findById(productId);
+
+    if (!product || !product.image || !product.image.data) {
+      return res.status(404).json({ error: 'Image not found' });
+    }
+
+    // 设置正确的内容类型
+    res.set('Content-Type', product.image.contentType);
+    // 发送图片数据
+    res.send(product.image.data);
   })
 );
 //update product

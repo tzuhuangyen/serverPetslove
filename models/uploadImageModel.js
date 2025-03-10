@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 
 const ProductSchema = new mongoose.Schema(
   {
-    image: { type: String, default: '' },
+    image: {
+      data: Buffer, // 存储图片的二进制数据
+      contentType: String, // 存储图片的MIME类型
+    },
     productName: { type: String, required: true },
     type: { type: String, required: true },
     order: { type: String, required: true },
