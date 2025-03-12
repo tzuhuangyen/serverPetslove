@@ -132,17 +132,36 @@ router.get(
 router.patch(
   '/updateProduct/:id' /* 	#swagger.tags = ['Admin-Products']
 #swagger.description = 'update Products by id' */,
+  adminUploadMiddleware.single('image'),
   handleErrorAsync(async (req, res, next) => {
     const productId = req.params.id;
     const { productName, type, order, price } = req.body;
     const updatedProduct = await ProductModel.findByIdAndUpdate(
       productId,
-      { productName, type, order, price },
+      {
+        productName,
+        type,
+        order,
+        price,
+        is_enabled: is_enabled !== undefined ? is_enabled : 1,
+      },
       { new: true }
     );
+    // 如果有上傳新圖片，則更新圖片數據
+    if (req.file) {
+      updateData.image = {
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+      };
+    }
     if (!updatedProduct) {
       return res.status(404).json({ error: 'Product not found' });
     }
+    res.status(200).json({
+      status: 'success',
+      message: 'Product updated successfully',
+      data: updatedProduct,
+    });
   })
 );
 
