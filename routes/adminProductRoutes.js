@@ -134,34 +134,51 @@ router.patch(
 #swagger.description = 'update Products by id' */,
   adminUploadMiddleware.single('image'),
   handleErrorAsync(async (req, res, next) => {
-    const productId = req.params.id;
-    const { productName, type, order, price } = req.body;
-    const updatedProduct = await ProductModel.findByIdAndUpdate(
-      productId,
-      {
+    try {
+      const productId = req.params.id;
+      console.log('Updating product with ID:', productId);
+      console.log('Request body:', req.body);
+      const { productName, type, order, price, is_enabled } = req.body;
+      // 準備更新數據
+      const updateData = {
         productName,
         type,
         order,
         price,
         is_enabled: is_enabled !== undefined ? is_enabled : 1,
-      },
-      { new: true }
-    );
-    // 如果有上傳新圖片，則更新圖片數據
-    if (req.file) {
-      updateData.image = {
-        data: req.file.buffer,
-        contentType: req.file.mimetype,
       };
+      console.log('Update data:', updateData);
+
+      // 如果有上傳新圖片，則更新圖片數據
+      if (req.file) {
+        console.log('New image uploaded:', req.file.originalname);
+        updateData.image = {
+          data: req.file.buffer,
+          contentType: req.file.mimetype,
+        };
+      }
+      const updatedProduct = await ProductModel.findByIdAndUpdate(
+        productId,
+        updateData,
+        { new: true }
+      );
+      if (!updatedProduct) {
+        return res.status(404).json({ error: 'Product not found' });
+      }
+      console.log('Product updated successfully:', updatedProduct._id);
+      res.status(200).json({
+        status: 'success',
+        message: 'Product updated successfully',
+        data: updatedProduct,
+      });
+    } catch (error) {
+      console.error('Error updating product:', error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to update product',
+        error: error.message,
+      });
     }
-    if (!updatedProduct) {
-      return res.status(404).json({ error: 'Product not found' });
-    }
-    res.status(200).json({
-      status: 'success',
-      message: 'Product updated successfully',
-      data: updatedProduct,
-    });
   })
 );
 
