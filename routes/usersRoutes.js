@@ -39,6 +39,17 @@ router.post(
       username,
       password: hashedPassword,
     });
+    const token = generateToken(newUser, 200, res);
+    // 返回成功響應和用戶信息
+    res.status(201).json({
+      status: 'success',
+      message: 'User registered successfully',
+      token,
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+      },
+    });
   })
 );
 
