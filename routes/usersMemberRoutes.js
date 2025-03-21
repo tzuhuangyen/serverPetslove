@@ -96,6 +96,8 @@ router.get(
     // 根据用户ID查找用户信息
     const user = await UserModel.findById(userId);
     if (!user) {
+      console.log(`User not found with ID: ${userId}`);
+
       return next(appError(404, 'User not found', next));
     }
     // 根据用户ID查找购物车数据
@@ -109,8 +111,23 @@ router.get(
     // });
 
     if (!cart) {
-      return next(appError(404, 'user Cart not found', next));
+      console.log(`Cart not found for user ${userId}, creating a new one`);
+      cart = new CartModel({
+        user: userId,
+        items: [],
+      });
+      await cart.save();
+      console.log(`New cart created for user ${userId}`);
+      // 填充用戶信息
+      await cart.populate({
+        path: 'user',
+        select: 'username',
+      });
     }
+    console.log(
+      `Returning cart for user ${userId}, items count: ${cart.items.length}`
+    );
+
     //if found user's cart, return cart
     res.status(200).json({ cart });
   })
@@ -322,22 +339,31 @@ router.patch(
       return next(appError(404, 'Product not found', next));
     }
     // Then, use userId to find the user's cart and update the item within it
-    let userCart = await CartModel.findOne({ userId });
+    let userCart = await CartModel.findOne({ user: userId });
     if (!userCart) {
-      userCart = new CartModel({ userId, items: [] });
+      userCart = new CartModel({ user: userId, items: [] });
     }
 
     const updateItemIndex = userCart.items.findIndex(
       (item) => item.productId.toString() === productId
     );
     if (updateItemIndex === -1) {
-      return next(appError(404, 'Product not found in cart', next));
+      // 如果購物車中沒有該商品，添加它
+      userCart.items.push({
+        productId,
+        productName: product.name, // 假設產品模型有 name 字段
+        quantity,
+        price: product.price, // 假設產品模型有 price 字段
+        image: product.image, // 假設產品模型有 image 字段
+      });
+    } else {
+      // 如果購物車中已有該商品，更新數量
+      userCart.items[updateItemIndex].quantity = quantity;
     }
-    userCart.items[updateItemIndex].quantity = quantity;
 
     // Update the quantity and total for the specific item
     await userCart.save(); // Save the updated cart
-    res.json({ message: 'Quantity updated successfully' });
+    res.json({ message: 'Quantity updated successfully', cart: userCart });
   })
 );
 // delete the item
