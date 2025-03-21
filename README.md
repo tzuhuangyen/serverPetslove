@@ -81,14 +81,7 @@ API documentation is available using Swagger. After starting the server, you can
 
 ## Project Structure
 
-├── controller/ # Controllers for handling business logic
-├── middlewares/ # Middleware for request handling ├── models/ # Mongoose models for MongoDB collections ├── routes/ # API route definitions
-├── service/ # Utility services (e.g., error handling, authentication)
-├── public/ # Publicly accessible files (e.g., images)
-├── swagger.js # Swagger configuration
-├── swagger-output.json # Generated Swagger documentation
-├── connectMongo.js # MongoDB connection setup
-├── server.js # Main entry point of the application └── package.json # Project metadata and dependencies
+├── controller/ # Controllers for handling business logic ├── middlewares/ # Middleware for request handling ├── models/ # Mongoose models for MongoDB collections ├── routes/ # API route definitions ├── service/ # Utility services (e.g., error handling, authentication) ├── public/ # Publicly accessible files (e.g., images) ├── swagger.js # Swagger configuration ├── swagger-output.json # Generated Swagger documentation ├── connectMongo.js # MongoDB connection setup ├── server.js # Main entry point of the application └── package.json # Project metadata and dependencies
 
 ## License
 
