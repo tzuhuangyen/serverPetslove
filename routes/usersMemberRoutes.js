@@ -342,9 +342,79 @@ router.patch(
 );
 // delete the item
 router.delete(
-  '/cart/{id}' /* 	#swagger.tags = ['User-Member:cart']
-#swagger.description = 'validate' */,
-  function () {}
+  '/cart/:id' /* 	#swagger.tags = ['User-Member:cart']
+#swagger.description = 'Delete an item from cart' */,
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    try {
+      const itemId = req.params.id;
+      const userId = req.user._id;
+
+      console.log(
+        `Attempting to delete item ${itemId} from cart for user ${userId}`
+      );
+
+      // Find the user's cart
+      const cart = await CartModel.findOne({ user: userId });
+
+      if (!cart) {
+        return next(appError(404, 'Cart not found', next));
+      }
+
+      // Log the cart items for debugging
+      console.log('Current cart items:', JSON.stringify(cart.items, null, 2));
+
+      // Check if the item exists in the cart by comparing both _id and productId
+      const initialItemCount = cart.items.length;
+
+      // Try to find the item by various ID fields
+      const itemToDelete = cart.items.find((item) => {
+        return (
+          // Compare as strings to avoid type issues
+          (item._id && item._id.toString() === itemId) ||
+          (item.productId && item.productId.toString() === itemId)
+        );
+      });
+
+      if (!itemToDelete) {
+        console.log(`Item with ID ${itemId} not found in cart`);
+        return next(appError(404, 'Item not found in cart', next));
+      }
+
+      console.log('Found item to delete:', itemToDelete);
+
+      // Remove the item from the cart
+      cart.items = cart.items.filter((item) => {
+        const itemIdMatch = item._id && item._id.toString() === itemId;
+        const productIdMatch =
+          item.productId && item.productId.toString() === itemId;
+        return !itemIdMatch && !productIdMatch;
+      });
+
+      // If no items were removed, the item wasn't in the cart
+      if (cart.items.length === initialItemCount) {
+        console.log(`Failed to remove item ${itemId} from cart`);
+        return next(appError(404, 'Failed to remove item from cart', next));
+      }
+
+      console.log(
+        `Successfully removed item. New cart length: ${cart.items.length}`
+      );
+
+      // Save the updated cart
+      await cart.save();
+
+      // Return success response
+      res.status(200).json({
+        success: true,
+        message: 'Item removed from cart successfully',
+        cart,
+      });
+    } catch (error) {
+      console.error('Error deleting item from cart:', error);
+      next(appError(500, `Error deleting item: ${error.message}`, next));
+    }
+  })
 );
 //user create an order
 const orders = {};
