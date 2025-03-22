@@ -132,13 +132,6 @@ router.get(
     res.status(200).json({ cart });
   })
 );
-//用戶登戶後 merged cart
-// router.patch(
-//   'cart/${id}' /* 	#swagger.tags = ['User-Member:cart']
-//   #swagger.description = 'post an cart' */,
-//   isAuth,
-//   mergeCart
-// );
 
 // 用戶登戶後 merge cart
 router.put(
@@ -458,6 +451,36 @@ router.post(
     res.json(orders[TimeStamp]);
   })
 );
+// 成立訂單
+app.post('/orders/', authenticateUser, async (req, res) => {
+  try {
+    const { userId, items, totalAmount } = req.body;
+
+    // Create a new order record
+    const newOrder = new Order({
+      userId,
+      items,
+      totalAmount,
+      status: 'draft',
+      createdAt: new Date(),
+    });
+
+    // Save to database
+    await newOrder.save();
+
+    // Return the order ID
+    res.status(200).json({
+      success: true,
+      orderId: newOrder._id,
+    });
+  } catch (error) {
+    console.error('Error creating draft order:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to create order',
+    });
+  }
+});
 //confirm the order
 router.get(
   '/confirmOrder',
