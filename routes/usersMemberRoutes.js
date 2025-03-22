@@ -490,15 +490,28 @@ router.get(
     res.render('confirm', { title: 'Express' });
   })
 );
-//取得 orders內容
+//retrieve all orders for a specific user
 router.get(
-  '/getUserOrders/:id',
+  '/getUserAllOrders',
   /* 	#swagger.tags = ['User-Member:orders']
-#swagger.description = 'validate' */ handleErrorAsync(
-    async (req, res, next) => {
-      res.json(orders[id]);
+#swagger.description = 'validate' */
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    try {
+      const userId = req.user._id;
+
+      // Find the order in the database
+      const orders = await Order.find({ userId });
+
+      res.status(200).json({
+        success: true,
+        orders,
+      });
+    } catch (error) {
+      console.error('Error retrieving order details:', error);
+      next(appError(500, `Error retrieving order: ${error.message}`, next));
     }
-  )
+  })
 );
 //用戶登出
 //log out
