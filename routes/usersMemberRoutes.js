@@ -437,22 +437,7 @@ router.delete(
     }
   })
 );
-//user create an order
-// const orders = {};
-// const ResponseType = 'JSON';
-// router.post(
-//   '/createOrder',
-//   handleErrorAsync(async (req, res, next) => {
-//     const data = req.body;
-//     const TimeStamp = Math.round(new Date().getTime() / 1000);
-//     console.log('TimeStamp:', TimeStamp);
-//     console.log('data:', data);
 
-//     orders[TimeStamp] = { ...data, TimeStamp, MerchantOrderNo: TimeStamp };
-//     console.log('createOrder:', TimeStamp, orders);
-//     res.json(orders[TimeStamp]);
-//   })
-// );
 // 成立訂單
 router.post('/orders/', isAuth, async (req, res) => {
   try {
@@ -592,7 +577,36 @@ router.patch(
     }
   })
 );
-//用戶登出
+//送出訂單後清除購物車
+router.put(
+  '/cart/clear',
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    try {
+      const userId = req.user._id;
+
+      // 清除用戶購物車
+      const updatedCart = await CartModel.findOneAndUpdate(
+        { user: userId },
+        { $set: { items: [] } },
+        { new: true }
+      );
+
+      if (!updatedCart) {
+        return next(appError(404, 'Cart not found', next));
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Cart cleared successfully',
+        cart: updatedCart,
+      });
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      next(appError(500, `Error clearing cart: ${error.message}`, next));
+    }
+  })
+);
 //log out
 router.post(
   '/myProfile',
