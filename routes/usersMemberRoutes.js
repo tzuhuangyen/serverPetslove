@@ -452,7 +452,7 @@ router.post(
   })
 );
 // 成立訂單
-app.post('/orders/', authenticateUser, async (req, res) => {
+router.post('/orders/', authenticateUser, async (req, res) => {
   try {
     const { userId, items, totalAmount } = req.body;
 
