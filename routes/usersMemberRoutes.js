@@ -9,6 +9,8 @@ require('dotenv').config({ path: '../config.env' });
 const UserModel = require('../models/usersModel');
 const CartModel = require('../models/cartModel');
 const ProductModel = require('../models/uploadImageModel');
+const Order = require('../models/orderModel'); // Add this line to import the Order model
+
 const appError = require('../service/appError');
 const handleErrorAsync = require('../service/handleErrorAsync');
 const { isAuth, generateToken } = require('../service/auth');
