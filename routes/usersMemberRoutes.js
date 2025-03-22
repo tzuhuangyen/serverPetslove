@@ -508,7 +508,7 @@ router.get(
       const userId = req.user._id;
 
       // Find the order in the database
-      const orders = await Order.find({ userId });
+      const orders = await Order.find({ userId: userId });
 
       res.status(200).json({
         success: true,
@@ -520,7 +520,7 @@ router.get(
     }
   })
 );
-// Add this route to get a specific order by ID
+//  get a specific order by ID
 router.get(
   '/getUserOrders/:id',
   isAuth,
@@ -534,7 +534,12 @@ router.get(
       if (!order) {
         return next(appError(404, 'Order not found', next));
       }
-
+      // 驗證訂單是否屬於當前用戶
+      if (order.userId && order.userId.toString() !== req.user._id.toString()) {
+        return next(
+          appError(403, 'You are not authorized to view this order', next)
+        );
+      }
       res.status(200).json({
         success: true,
         order,
