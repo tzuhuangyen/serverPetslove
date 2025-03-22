@@ -438,21 +438,21 @@ router.delete(
   })
 );
 //user create an order
-const orders = {};
-const ResponseType = 'JSON';
-router.post(
-  '/createOrder',
-  handleErrorAsync(async (req, res, next) => {
-    const data = req.body;
-    const TimeStamp = Math.round(new Date().getTime() / 1000);
-    console.log('TimeStamp:', TimeStamp);
-    console.log('data:', data);
+// const orders = {};
+// const ResponseType = 'JSON';
+// router.post(
+//   '/createOrder',
+//   handleErrorAsync(async (req, res, next) => {
+//     const data = req.body;
+//     const TimeStamp = Math.round(new Date().getTime() / 1000);
+//     console.log('TimeStamp:', TimeStamp);
+//     console.log('data:', data);
 
-    orders[TimeStamp] = { ...data, TimeStamp, MerchantOrderNo: TimeStamp };
-    console.log('createOrder:', TimeStamp, orders);
-    res.json(orders[TimeStamp]);
-  })
-);
+//     orders[TimeStamp] = { ...data, TimeStamp, MerchantOrderNo: TimeStamp };
+//     console.log('createOrder:', TimeStamp, orders);
+//     res.json(orders[TimeStamp]);
+//   })
+// );
 // 成立訂單
 router.post('/orders/', isAuth, async (req, res) => {
   try {
@@ -510,6 +510,63 @@ router.get(
     } catch (error) {
       console.error('Error retrieving order details:', error);
       next(appError(500, `Error retrieving order: ${error.message}`, next));
+    }
+  })
+);
+// Add this route to get a specific order by ID
+router.get(
+  '/getUserOrders/:id',
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    const orderId = req.params.id;
+
+    try {
+      // Find order in database
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return next(appError(404, 'Order not found', next));
+      }
+
+      res.status(200).json({
+        success: true,
+        order,
+      });
+    } catch (error) {
+      console.error('Error retrieving order:', error);
+      next(appError(500, `Error retrieving order: ${error.message}`, next));
+    }
+  })
+);
+
+// Add this route to update order status
+router.patch(
+  '/orders/:id/status',
+  isAuth,
+  handleErrorAsync(async (req, res, next) => {
+    const { status } = req.body;
+    const orderId = req.params.id;
+
+    try {
+      const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { status },
+        { new: true }
+      );
+
+      if (!updatedOrder) {
+        return next(appError(404, 'Order not found', next));
+      }
+
+      res.status(200).json({
+        success: true,
+        order: updatedOrder,
+      });
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      next(
+        appError(500, `Error updating order status: ${error.message}`, next)
+      );
     }
   })
 );
