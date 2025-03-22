@@ -539,7 +539,7 @@ router.get(
   })
 );
 
-// Add this route to update order status
+// update order status
 router.patch(
   '/orders/:id/status',
   isAuth,
