@@ -457,11 +457,23 @@ router.delete(
 router.post('/orders/', isAuth, async (req, res) => {
   try {
     const userId = req.user._id;
+    if (!userId) {
+      return next(
+        appError(400, 'User ID not found in authentication token', next)
+      );
+    }
+    console.log('Creating order for user:', userId);
+
     const { items, totalAmount, paymentMethod, paymentDetails } = req.body;
+
+    // 確保items是有效的數組
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return next(appError(400, 'Invalid items data', next));
+    }
 
     // Create a new order record
     const newOrder = new Order({
-      userId,
+      userId: userId,
       items,
       totalAmount,
       paymentMethod,
@@ -469,7 +481,7 @@ router.post('/orders/', isAuth, async (req, res) => {
       status: 'draft',
       createdAt: new Date(),
     });
-
+    console.log('New order created:', newOrder);
     // Save to database
     await newOrder.save();
 
