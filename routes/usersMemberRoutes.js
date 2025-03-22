@@ -484,6 +484,13 @@ router.post('/orders/', isAuth, async (req, res) => {
     console.log('New order created:', newOrder);
     // Save to database
     await newOrder.save();
+    // 清除用戶購物車
+    await CartModel.findOneAndUpdate(
+      { user: userId },
+      { $set: { items: [] } },
+      { new: true }
+    );
+    console.log('Cart cleared for user:', userId);
 
     // Return the order ID
     res.status(200).json({
