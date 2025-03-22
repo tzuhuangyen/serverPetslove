@@ -456,13 +456,16 @@ router.delete(
 // 成立訂單
 router.post('/orders/', isAuth, async (req, res) => {
   try {
-    const { userId, items, totalAmount } = req.body;
+    const userId = req.user._id;
+    const { items, totalAmount, paymentMethod, paymentDetails } = req.body;
 
     // Create a new order record
     const newOrder = new Order({
       userId,
       items,
       totalAmount,
+      paymentMethod,
+      paymentDetails,
       status: 'draft',
       createdAt: new Date(),
     });
